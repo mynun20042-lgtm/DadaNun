@@ -15,6 +15,9 @@ namespace PartyGame
         [Tooltip("1-based order in which this player joined.")]
         public int JoinOrder;
 
+        [Tooltip("Accumulated game score for this player.")]
+        public int Score;
+
         [Tooltip("Which controller layout this player's phone is currently showing.")]
         public MobileTemplate CurrentTemplate = MobileTemplate.None;
 
@@ -31,6 +34,28 @@ namespace PartyGame
 
         [Header("SingleButton template")]
         public bool SingleA;
+
+        [Header("FourChoice template")]
+        public bool Choice1;
+        public bool Choice2;
+        public bool Choice3;
+        public bool Choice4;
+
+        /// <summary>
+        /// Returns which of the four choice buttons is currently held (1-4),
+        /// or 0 if none. If multiple are held, the lowest index wins.
+        /// </summary>
+        public int PressedChoice
+        {
+            get
+            {
+                if (Choice1) return 1;
+                if (Choice2) return 2;
+                if (Choice3) return 3;
+                if (Choice4) return 4;
+                return 0;
+            }
+        }
 
         /// <summary>Apply an incoming input message according to the active template.</summary>
         public void ApplyInput(NetMessage m)
@@ -51,6 +76,12 @@ namespace PartyGame
                 case MobileTemplate.SingleButton:
                     SingleA = m.a;
                     break;
+                case MobileTemplate.FourChoice:
+                    Choice1 = m.c1;
+                    Choice2 = m.c2;
+                    Choice3 = m.c3;
+                    Choice4 = m.c4;
+                    break;
             }
         }
 
@@ -61,6 +92,7 @@ namespace PartyGame
             JoystickA = JoystickB = false;
             DpadUp = DpadDown = DpadLeft = DpadRight = false;
             SingleA = false;
+            Choice1 = Choice2 = Choice3 = Choice4 = false;
         }
     }
 }

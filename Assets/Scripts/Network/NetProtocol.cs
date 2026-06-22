@@ -45,6 +45,12 @@ namespace PartyGame
         public bool left;
         public bool right;
 
+        // --- input: four-choice (FourChoice) ---
+        public bool c1;
+        public bool c2;
+        public bool c3;
+        public bool c4;
+
         // --- joinResult ---
         public bool ok;
 

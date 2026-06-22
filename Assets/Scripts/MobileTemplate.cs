@@ -18,5 +18,8 @@ namespace PartyGame
 
         /// <summary>A single A button.</summary>
         SingleButton = 3,
+
+        /// <summary>Four numbered choice buttons (1 / 2 / 3 / 4), used for quiz-style answers.</summary>
+        FourChoice = 4,
     }
 }

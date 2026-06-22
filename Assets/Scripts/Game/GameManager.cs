@@ -29,9 +29,10 @@ namespace PartyGame
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
 
-            if (server == null) server = FindAnyObjectByType<MobileServer>();
-            if (connections == null) connections = FindAnyObjectByType<PlayerConnectionManager>();
+            if (server == null) server = MobileServer.Instance != null ? MobileServer.Instance : FindAnyObjectByType<MobileServer>();
+            if (connections == null) connections = PlayerConnectionManager.Instance != null ? PlayerConnectionManager.Instance : FindAnyObjectByType<PlayerConnectionManager>();
         }
 
         private void Start()

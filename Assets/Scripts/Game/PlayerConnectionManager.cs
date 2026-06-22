@@ -33,9 +33,19 @@ namespace PartyGame
 
         public int PlayerCount => _ordered.Count;
 
+        public static PlayerConnectionManager Instance { get; private set; }
+
         private void Awake()
         {
-            if (server == null) server = FindAnyObjectByType<MobileServer>();
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            if (server == null) server = MobileServer.Instance != null ? MobileServer.Instance : FindAnyObjectByType<MobileServer>();
             if (playerContainer == null) playerContainer = transform;
         }
 

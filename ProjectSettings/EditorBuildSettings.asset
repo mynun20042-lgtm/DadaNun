@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/GameSelect.unity
+    guid: 7ad020052a4a14a4c824a0033791b296
+  - enabled: 1
+    path: Assets/Scenes/CoinGame.unity
+    guid: 1ce579e5c19631e46944564f0cc47388
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

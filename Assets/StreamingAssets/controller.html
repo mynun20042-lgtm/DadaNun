@@ -50,6 +50,12 @@
   .singleWrap { position:absolute; inset:0; display:flex; justify-content:center; align-items:center; padding:24px; }
   .bigA { width:62vmin; height:62vmin; border-radius:50%; background:var(--a); font-size:64px; font-weight:800; }
   .bigA.active { filter:brightness(1.4); transform:scale(0.96); }
+
+  /* four choice */
+  .quad { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:14px; padding:20px; }
+  .qbtn { border-radius:20px; font-size:64px; font-weight:800; display:flex; justify-content:center; align-items:center; color:#fff; }
+  .qbtn.active { filter:brightness(1.45); transform:scale(0.96); }
+  .q1 { background:#4f7cff; } .q2 { background:#ff5d6c; } .q3 { background:#2ecc71; } .q4 { background:#ffb648; }
 </style>
 </head>
 <body>
@@ -79,7 +85,7 @@
 (function(){
   "use strict";
 
-  var TEMPLATE = { NONE:0, JOYSTICK_AB:1, DPAD:2, SINGLE:3 };
+  var TEMPLATE = { NONE:0, JOYSTICK_AB:1, DPAD:2, SINGLE:3, FOUR_CHOICE:4 };
 
   var ws = null;
   var myId = 0;
@@ -87,7 +93,7 @@
   var template = TEMPLATE.NONE;
   var joined = false;
 
-  var state = { jx:0, jy:0, a:false, b:false, up:false, down:false, left:false, right:false };
+  var state = { jx:0, jy:0, a:false, b:false, up:false, down:false, left:false, right:false, c1:false, c2:false, c3:false, c4:false };
 
   var elJoin   = document.getElementById("join");
   var elPlay   = document.getElementById("play");
@@ -166,6 +172,7 @@
     if (template === TEMPLATE.JOYSTICK_AB){ m.jx=state.jx; m.jy=state.jy; m.a=state.a; m.b=state.b; }
     else if (template === TEMPLATE.DPAD){ m.up=state.up; m.down=state.down; m.left=state.left; m.right=state.right; }
     else if (template === TEMPLATE.SINGLE){ m.a=state.a; }
+    else if (template === TEMPLATE.FOUR_CHOICE){ m.c1=state.c1; m.c2=state.c2; m.c3=state.c3; m.c4=state.c4; }
     else return;
     send(m);
   }
@@ -184,10 +191,12 @@
     elArea.innerHTML = "";
     state.jx=0; state.jy=0; state.a=false; state.b=false;
     state.up=false; state.down=false; state.left=false; state.right=false;
+    state.c1=false; state.c2=false; state.c3=false; state.c4=false;
 
     if (t === TEMPLATE.JOYSTICK_AB) buildJoystickAB();
     else if (t === TEMPLATE.DPAD) buildDpad();
     else if (t === TEMPLATE.SINGLE) buildSingle();
+    else if (t === TEMPLATE.FOUR_CHOICE) buildFourChoice();
     else buildWaiting();
   }
 
@@ -261,6 +270,19 @@
     var a = document.createElement("button"); a.className="btn bigA"; a.textContent="A";
     wrap.appendChild(a); elArea.appendChild(wrap);
     holdButton(a,"a");
+  }
+
+  function buildFourChoice(){
+    var quad = document.createElement("div"); quad.className="quad";
+    var defs = [["q1","1","c1"],["q2","2","c2"],["q3","3","c3"],["q4","4","c4"]];
+    defs.forEach(function(d){
+      var b = document.createElement("button");
+      b.className = "btn qbtn "+d[0];
+      b.textContent = d[1];
+      quad.appendChild(b);
+      holdButton(b, d[2]);
+    });
+    elArea.appendChild(quad);
   }
 
   // start

@@ -40,6 +40,8 @@ namespace PartyGame
         /// <summary>Raised on the main thread for every text message received from a client.</summary>
         public event Action<int, string> MessageReceived;
 
+        public static MobileServer Instance { get; private set; }
+
         public bool IsRunning { get; private set; }
         public string LocalIp { get; private set; } = "127.0.0.1";
 
@@ -66,6 +68,18 @@ namespace PartyGame
             public Thread Thread;
             public readonly object SendLock = new object();
             public volatile bool Alive = true;
+        }
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                // A persistent server already exists (e.g. carried over from a previous scene).
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
         private void Start()
