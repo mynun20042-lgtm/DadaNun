@@ -924,11 +924,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: b4ba4037-d645-48ae-9745-8081a2ed7d79
+  cloudProjectId: 60b702db-40a1-4aa5-aef1-cdfd44f9d9f3
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: DedaNunProject
-  organizationId: mynun
+  organizationId: cydadia04
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

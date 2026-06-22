@@ -21,5 +21,8 @@ namespace PartyGame
 
         /// <summary>Four numbered choice buttons (1 / 2 / 3 / 4), used for quiz-style answers.</summary>
         FourChoice = 4,
+
+        /// <summary>Three choice buttons (Scissors / Rock / Paper), used for Rock-Paper-Scissors.</summary>
+        ThreeChoice = 5,
     }
 }

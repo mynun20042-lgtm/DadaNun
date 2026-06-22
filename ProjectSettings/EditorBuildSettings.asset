@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CoinGame.unity
     guid: 1ce579e5c19631e46944564f0cc47388
+  - enabled: 1
+    path: Assets/Scenes/RpsGame.unity
+    guid: 57d0bbebf277f8c4cbd963820d0f2883
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
