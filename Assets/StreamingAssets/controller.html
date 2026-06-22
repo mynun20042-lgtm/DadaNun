@@ -52,10 +52,13 @@
   .bigA.active { filter:brightness(1.4); transform:scale(0.96); }
 
   /* four choice */
-  .quad { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:14px; padding:20px; }
-  .qbtn { border-radius:20px; font-size:64px; font-weight:800; display:flex; justify-content:center; align-items:center; color:#fff; }
-  .qbtn.active { filter:brightness(1.45); transform:scale(0.96); }
-  .q1 { background:#4f7cff; } .q2 { background:#ff5d6c; } .q3 { background:#2ecc71; } .q4 { background:#ffb648; }
+  .quad { position:absolute; inset:0; display:grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; gap:16px; padding:24px; transition: opacity 0.3s; }
+  .quad.locked { pointer-events: none; }
+  .quad.locked:not(.local-lock) { opacity: 0.5; }
+  .qbtn { border: 2px solid rgba(255, 255, 255, 0.1); border-radius:24px; font-size:64px; font-weight:800; display:flex; justify-content:center; align-items:center; color:var(--txt); background: var(--panel); transition: all 0.25s ease; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+  .qbtn.active { filter:brightness(1.25); transform:scale(0.96); }
+  .qbtn.unselected { opacity: 0.2; filter: scale(0.95); }
+  .qbtn.selected { transform: scale(1.05) !important; background: var(--accent) !important; color: #ffffff !important; border: 4px solid #ffffff !important; box-shadow: 0 0 25px rgba(79, 124, 255, 0.8); z-index: 10; }
 </style>
 </head>
 <body>
@@ -152,8 +155,18 @@
         }
         break;
       case "template":
-        template = msg.template|0;
-        if (joined) renderTemplate(template);
+        var newTemplate = msg.template|0;
+        var act = msg.active !== false;
+        if (joined) {
+          if (newTemplate === template) {
+            setTemplateActive(act);
+          } else {
+            template = newTemplate;
+            renderTemplate(template, act);
+          }
+        } else {
+          template = newTemplate;
+        }
         break;
     }
   }
@@ -186,19 +199,38 @@
     sendJoin(myNick);
   });
 
-  // ---- template rendering ----
-  function renderTemplate(t){
-    elArea.innerHTML = "";
-    state.jx=0; state.jy=0; state.a=false; state.b=false;
-    state.up=false; state.down=false; state.left=false; state.right=false;
-    state.c1=false; state.c2=false; state.c3=false; state.c4=false;
+  function setTemplateActive(act){
+   var quad = elArea.querySelector(".quad");
+   if (quad) {
+     if (act) {
+       quad.classList.remove("locked");
+       quad.classList.remove("local-lock");
+       var buttons = quad.querySelectorAll(".qbtn");
+       buttons.forEach(function(b){
+         b.classList.remove("selected");
+         b.classList.remove("unselected");
+       });
+     } else {
+       quad.classList.add("locked");
+       quad.classList.remove("local-lock");
+     }
+   }
+ }
 
-    if (t === TEMPLATE.JOYSTICK_AB) buildJoystickAB();
-    else if (t === TEMPLATE.DPAD) buildDpad();
-    else if (t === TEMPLATE.SINGLE) buildSingle();
-    else if (t === TEMPLATE.FOUR_CHOICE) buildFourChoice();
-    else buildWaiting();
-  }
+ // ---- template rendering ----
+ function renderTemplate(t, act){
+   if (act === undefined) act = true;
+   elArea.innerHTML = "";
+   state.jx=0; state.jy=0; state.a=false; state.b=false;
+   state.up=false; state.down=false; state.left=false; state.right=false;
+   state.c1=false; state.c2=false; state.c3=false; state.c4=false;
+
+   if (t === TEMPLATE.JOYSTICK_AB) buildJoystickAB();
+   else if (t === TEMPLATE.DPAD) buildDpad();
+   else if (t === TEMPLATE.SINGLE) buildSingle();
+   else if (t === TEMPLATE.FOUR_CHOICE) buildFourChoice(act);
+   else buildWaiting();
+ }
 
   function buildWaiting(){
     var w = document.createElement("div");
@@ -272,15 +304,35 @@
     holdButton(a,"a");
   }
 
-  function buildFourChoice(){
+  function buildFourChoice(act){
     var quad = document.createElement("div"); quad.className="quad";
-    var defs = [["q1","1","c1"],["q2","2","c2"],["q3","3","c3"],["q4","4","c4"]];
+    if (!act) quad.classList.add("locked");
+    var defs = [["1","c1"],["2","c2"],["3","c3"],["4","c4"]];
     defs.forEach(function(d){
       var b = document.createElement("button");
-      b.className = "btn qbtn "+d[0];
-      b.textContent = d[1];
+      b.className = "btn qbtn";
+      b.textContent = d[0];
       quad.appendChild(b);
-      holdButton(b, d[2]);
+
+      b.addEventListener("pointerdown", function(e){
+        e.preventDefault();
+        if (quad.classList.contains("locked")) return;
+
+        // Lock locally immediately
+        quad.classList.add("locked");
+        quad.classList.add("local-lock");
+
+        // Highlight selected, fade others
+        b.classList.add("selected");
+        var siblings = quad.querySelectorAll(".qbtn");
+        siblings.forEach(function(sib){
+          if (sib !== b) sib.classList.add("unselected");
+        });
+
+        // Set input state and send
+        state[d[1]] = true;
+        sendInput();
+      });
     });
     elArea.appendChild(quad);
   }

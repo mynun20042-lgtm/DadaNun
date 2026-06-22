@@ -30,6 +30,7 @@ namespace PartyGame
 
         // --- template switch ---
         public int template; // cast to/from MobileTemplate
+        public bool active;   // true if template inputs are enabled/interactive
 
         // --- input: joystick (JoystickAB) ---
         public float jx; // -1..1
@@ -66,7 +67,7 @@ namespace PartyGame
         public static NetMessage JoinResult(bool ok, string message = null) =>
             new NetMessage { type = "joinResult", ok = ok, message = message };
 
-        public static NetMessage Template(MobileTemplate t) =>
-            new NetMessage { type = "template", template = (int)t };
+        public static NetMessage Template(MobileTemplate t, bool active = true) =>
+            new NetMessage { type = "template", template = (int)t, active = active };
     }
 }
