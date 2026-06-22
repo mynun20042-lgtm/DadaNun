@@ -82,6 +82,12 @@ namespace PartyGame
                     Choice3 = m.c3;
                     Choice4 = m.c4;
                     break;
+                case MobileTemplate.ThreeChoice:
+                    Choice1 = m.c1;
+                    Choice2 = m.c2;
+                    Choice3 = m.c3;
+                    Choice4 = false;
+                    break;
             }
         }
 

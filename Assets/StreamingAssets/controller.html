@@ -55,6 +55,12 @@
   .quad { position:absolute; inset:0; display:grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; gap:16px; padding:24px; transition: opacity 0.3s; }
   .quad.locked { pointer-events: none; }
   .quad.locked:not(.local-lock) { opacity: 0.5; }
+
+  /* three choice */
+  .triple { position:absolute; inset:0; display:grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr; gap:16px; padding:24px; transition: opacity 0.3s; }
+  .triple.locked { pointer-events: none; }
+  .triple.locked:not(.local-lock) { opacity: 0.5; }
+
   .qbtn { border: 2px solid rgba(255, 255, 255, 0.1); border-radius:24px; font-size:64px; font-weight:800; display:flex; justify-content:center; align-items:center; color:var(--txt); background: var(--panel); transition: all 0.25s ease; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
   .qbtn.active { filter:brightness(1.25); transform:scale(0.96); }
   .qbtn.unselected { opacity: 0.2; filter: scale(0.95); }
@@ -88,7 +94,7 @@
 (function(){
   "use strict";
 
-  var TEMPLATE = { NONE:0, JOYSTICK_AB:1, DPAD:2, SINGLE:3, FOUR_CHOICE:4 };
+  var TEMPLATE = { NONE:0, JOYSTICK_AB:1, DPAD:2, SINGLE:3, FOUR_CHOICE:4, THREE_CHOICE:5 };
 
   var ws = null;
   var myId = 0;
@@ -185,7 +191,7 @@
     if (template === TEMPLATE.JOYSTICK_AB){ m.jx=state.jx; m.jy=state.jy; m.a=state.a; m.b=state.b; }
     else if (template === TEMPLATE.DPAD){ m.up=state.up; m.down=state.down; m.left=state.left; m.right=state.right; }
     else if (template === TEMPLATE.SINGLE){ m.a=state.a; }
-    else if (template === TEMPLATE.FOUR_CHOICE){ m.c1=state.c1; m.c2=state.c2; m.c3=state.c3; m.c4=state.c4; }
+    else if (template === TEMPLATE.FOUR_CHOICE || template === TEMPLATE.THREE_CHOICE){ m.c1=state.c1; m.c2=state.c2; m.c3=state.c3; m.c4=state.c4; }
     else return;
     send(m);
   }
@@ -200,7 +206,7 @@
   });
 
   function setTemplateActive(act){
-   var quad = elArea.querySelector(".quad");
+   var quad = elArea.querySelector(".quad, .triple");
    if (quad) {
      if (act) {
        quad.classList.remove("locked");
@@ -229,6 +235,7 @@
    else if (t === TEMPLATE.DPAD) buildDpad();
    else if (t === TEMPLATE.SINGLE) buildSingle();
    else if (t === TEMPLATE.FOUR_CHOICE) buildFourChoice(act);
+   else if (t === TEMPLATE.THREE_CHOICE) buildThreeChoice(act);
    else buildWaiting();
  }
 
@@ -335,6 +342,41 @@
       });
     });
     elArea.appendChild(quad);
+  }
+
+  function buildThreeChoice(act){
+    var triple = document.createElement("div"); triple.className="triple";
+    if (!act) triple.classList.add("locked");
+    var defs = [["✌️\nScissors","c1"],["✊\nRock","c2"],["🖐️\nPaper","c3"]];
+    defs.forEach(function(d){
+      var b = document.createElement("button");
+      b.className = "btn qbtn";
+      b.style.whiteSpace = "pre-line";
+      b.style.fontSize = "min(8vw, 32px)";
+      b.innerHTML = d[0];
+      triple.appendChild(b);
+
+      b.addEventListener("pointerdown", function(e){
+        e.preventDefault();
+        if (triple.classList.contains("locked")) return;
+
+        // Lock locally immediately
+        triple.classList.add("locked");
+        triple.classList.add("local-lock");
+
+        // Highlight selected, fade others
+        b.classList.add("selected");
+        var siblings = triple.querySelectorAll(".qbtn");
+        siblings.forEach(function(sib){
+          if (sib !== b) sib.classList.add("unselected");
+        });
+
+        // Set input state and send
+        state[d[1]] = true;
+        sendInput();
+      });
+    });
+    elArea.appendChild(triple);
   }
 
   // start

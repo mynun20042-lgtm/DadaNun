@@ -53,6 +53,12 @@ namespace PartyGame.EditorTools
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("Choice3"));
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("Choice4"));
                     break;
+                case MobileTemplate.ThreeChoice:
+                    EditorGUILayout.LabelField("ThreeChoice Input (1=Scissors, 2=Rock, 3=Paper)", EditorStyles.boldLabel);
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("Choice1"));
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("Choice2"));
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("Choice3"));
+                    break;
                 default:
                     EditorGUILayout.HelpBox("No template active (None). Waiting for host to assign a controller.", MessageType.Info);
                     break;
