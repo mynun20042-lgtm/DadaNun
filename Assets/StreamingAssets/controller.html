@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Party Controller</title>
+<style>
+  :root { --bg:#11131a; --panel:#1c2030; --accent:#4f7cff; --a:#ff5d6c; --b:#ffb648; --txt:#eef1f8; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; touch-action:none; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; overflow:hidden; }
+  #app { position:fixed; inset:0; display:flex; flex-direction:column; }
+  .screen { flex:1; display:none; flex-direction:column; }
+  .screen.active { display:flex; }
+  .topbar { padding:10px 14px; display:flex; align-items:center; gap:10px; font-size:13px; color:#9aa3bd; }
+  .dot { width:9px; height:9px; border-radius:50%; background:#e74c3c; }
+  .dot.on { background:#2ecc71; }
+
+  /* join */
+  #join { justify-content:center; align-items:center; gap:18px; padding:24px; }
+  #join h1 { font-size:24px; margin:0; }
+  #join p { color:#9aa3bd; margin:0; }
+  #nick { width:100%; max-width:340px; padding:16px; font-size:18px; border-radius:12px; border:1px solid #2c3350; background:var(--panel); color:var(--txt); text-align:center; }
+  .btn { border:none; border-radius:14px; color:#fff; font-weight:700; cursor:pointer; }
+  #joinBtn { width:100%; max-width:340px; padding:16px; font-size:18px; background:var(--accent); }
+
+  /* play header */
+  #playHeader { padding:8px 14px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:#9aa3bd; }
+  #playArea { flex:1; position:relative; }
+
+  /* waiting */
+  .waiting { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; color:#9aa3bd; }
+
+  /* joystick */
+  .joyWrap { position:absolute; left:0; top:0; bottom:0; width:55%; display:flex; justify-content:center; align-items:center; }
+  .joyBase { width:180px; height:180px; border-radius:50%; background:var(--panel); position:relative; touch-action:none; }
+  .joyKnob { width:80px; height:80px; border-radius:50%; background:var(--accent); position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); pointer-events:none; }
+  .rightPad { position:absolute; right:0; top:0; bottom:0; width:45%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:22px; }
+  .gbtn { width:110px; height:110px; border-radius:50%; font-size:34px; display:flex; justify-content:center; align-items:center; }
+  .gbtn.active { filter:brightness(1.4); transform:scale(0.94); }
+  .gbtn.a { background:var(--a); }
+  .gbtn.b { background:var(--b); }
+
+  /* dpad */
+  .dpad { position:absolute; inset:0; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:10px; padding:24px; }
+  .dbtn { background:var(--panel); border-radius:16px; font-size:40px; display:flex; justify-content:center; align-items:center; }
+  .dbtn.active { background:var(--accent); }
+  .du { grid-column:2; grid-row:1; } .dl { grid-column:1; grid-row:2; } .dr { grid-column:3; grid-row:2; } .dd { grid-column:2; grid-row:3; }
+
+  /* single */
+  .singleWrap { position:absolute; inset:0; display:flex; justify-content:center; align-items:center; padding:24px; }
+  .bigA { width:62vmin; height:62vmin; border-radius:50%; background:var(--a); font-size:64px; font-weight:800; }
+  .bigA.active { filter:brightness(1.4); transform:scale(0.96); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- JOIN SCREEN -->
+  <div id="join" class="screen active">
+    <h1>Party Controller</h1>
+    <p>Enter a nickname to join</p>
+    <input id="nick" maxlength="12" placeholder="Nickname" autocomplete="off">
+    <button id="joinBtn" class="btn">Join</button>
+    <p id="joinMsg" style="color:var(--a)"></p>
+  </div>
+
+  <!-- PLAY SCREEN -->
+  <div id="play" class="screen">
+    <div id="playHeader">
+      <span id="meName">-</span>
+      <span><span id="dot" class="dot"></span> <span id="connTxt">Disconnected</span></span>
+    </div>
+    <div id="playArea"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var TEMPLATE = { NONE:0, JOYSTICK_AB:1, DPAD:2, SINGLE:3 };
+
+  var ws = null;
+  var myId = 0;
+  var myNick = "";
+  var template = TEMPLATE.NONE;
+  var joined = false;
+
+  var state = { jx:0, jy:0, a:false, b:false, up:false, down:false, left:false, right:false };
+
+  var elJoin   = document.getElementById("join");
+  var elPlay   = document.getElementById("play");
+  var elNick   = document.getElementById("nick");
+  var elJoinBt = document.getElementById("joinBtn");
+  var elJoinMsg= document.getElementById("joinMsg");
+  var elArea   = document.getElementById("playArea");
+  var elDot    = document.getElementById("dot");
+  var elConn   = document.getElementById("connTxt");
+  var elMeName = document.getElementById("meName");
+
+  function show(screen){
+    elJoin.classList.toggle("active", screen==="join");
+    elPlay.classList.toggle("active", screen==="play");
+  }
+
+  function setConn(ok){
+    elDot.classList.toggle("on", ok);
+    elConn.textContent = ok ? "Connected" : "Disconnected";
+  }
+
+  function connect(){
+    var proto = (location.protocol === "https:") ? "wss://" : "ws://";
+    ws = new WebSocket(proto + location.host + "/ws");
+
+    ws.onopen = function(){
+      setConn(true);
+      // If we already had a nickname (reconnect), re-join automatically.
+      if (myNick) sendJoin(myNick);
+    };
+    ws.onclose = function(){
+      setConn(false);
+      setTimeout(connect, 1500); // auto-reconnect
+    };
+    ws.onerror = function(){ try{ ws.close(); }catch(e){} };
+    ws.onmessage = function(ev){
+      var msg;
+      try { msg = JSON.parse(ev.data); } catch(e){ return; }
+      handle(msg);
+    };
+  }
+
+  function handle(msg){
+    switch(msg.type){
+      case "welcome":
+        myId = msg.id;
+        break;
+      case "joinResult":
+        if (msg.ok){
+          joined = true;
+          elMeName.textContent = myNick;
+          show("play");
+          renderTemplate(template);
+        } else {
+          elJoinMsg.textContent = msg.message || "Failed to join.";
+        }
+        break;
+      case "template":
+        template = msg.template|0;
+        if (joined) renderTemplate(template);
+        break;
+    }
+  }
+
+  function send(obj){
+    if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
+  }
+
+  function sendJoin(nick){
+    send({ type:"join", nick:nick });
+  }
+
+  function sendInput(){
+    if (!joined) return;
+    var m = { type:"input" };
+    if (template === TEMPLATE.JOYSTICK_AB){ m.jx=state.jx; m.jy=state.jy; m.a=state.a; m.b=state.b; }
+    else if (template === TEMPLATE.DPAD){ m.up=state.up; m.down=state.down; m.left=state.left; m.right=state.right; }
+    else if (template === TEMPLATE.SINGLE){ m.a=state.a; }
+    else return;
+    send(m);
+  }
+
+  // ---- join interaction ----
+  elJoinBt.addEventListener("click", function(){
+    var n = (elNick.value || "").trim();
+    if (n.length === 0){ elJoinMsg.textContent = "Please enter a nickname."; return; }
+    myNick = n;
+    elJoinMsg.textContent = "";
+    sendJoin(myNick);
+  });
+
+  // ---- template rendering ----
+  function renderTemplate(t){
+    elArea.innerHTML = "";
+    state.jx=0; state.jy=0; state.a=false; state.b=false;
+    state.up=false; state.down=false; state.left=false; state.right=false;
+
+    if (t === TEMPLATE.JOYSTICK_AB) buildJoystickAB();
+    else if (t === TEMPLATE.DPAD) buildDpad();
+    else if (t === TEMPLATE.SINGLE) buildSingle();
+    else buildWaiting();
+  }
+
+  function buildWaiting(){
+    var w = document.createElement("div");
+    w.className = "waiting";
+    w.innerHTML = "<div style='font-size:40px'>&#9203;</div><div>Waiting for host...</div>";
+    elArea.appendChild(w);
+  }
+
+  function holdButton(el, key){
+    el.addEventListener("pointerdown", function(e){ e.preventDefault(); state[key]=true; el.classList.add("active"); sendInput(); });
+    var up = function(e){ if(state[key]){ state[key]=false; el.classList.remove("active"); sendInput(); } };
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+    el.addEventListener("pointerleave", up);
+  }
+
+  function buildJoystickAB(){
+    var joyWrap = document.createElement("div"); joyWrap.className="joyWrap";
+    var base = document.createElement("div"); base.className="joyBase";
+    var knob = document.createElement("div"); knob.className="joyKnob";
+    base.appendChild(knob); joyWrap.appendChild(base); elArea.appendChild(joyWrap);
+
+    var right = document.createElement("div"); right.className="rightPad";
+    var bBtn = document.createElement("button"); bBtn.className="btn gbtn b"; bBtn.textContent="B";
+    var aBtn = document.createElement("button"); aBtn.className="btn gbtn a"; aBtn.textContent="A";
+    right.appendChild(bBtn); right.appendChild(aBtn); elArea.appendChild(right);
+    holdButton(aBtn,"a"); holdButton(bBtn,"b");
+
+    var activePointer = null;
+    var R = 50; // max knob travel (px)
+
+    function moveKnob(clientX, clientY){
+      var r = base.getBoundingClientRect();
+      var cx = r.left + r.width/2, cy = r.top + r.height/2;
+      var dx = clientX - cx, dy = clientY - cy;
+      var dist = Math.hypot(dx,dy);
+      if (dist > R){ dx = dx/dist*R; dy = dy/dist*R; }
+      knob.style.transform = "translate(calc(-50% + "+dx+"px), calc(-50% + "+dy+"px))";
+      state.jx =  +(dx/R).toFixed(3);
+      state.jy =  +(-dy/R).toFixed(3); // up is positive
+      sendInput();
+    }
+    function resetKnob(){
+      knob.style.transform = "translate(-50%,-50%)";
+      state.jx=0; state.jy=0; sendInput();
+    }
+    base.addEventListener("pointerdown", function(e){ e.preventDefault(); activePointer=e.pointerId; base.setPointerCapture(e.pointerId); moveKnob(e.clientX,e.clientY); });
+    base.addEventListener("pointermove", function(e){ if(e.pointerId===activePointer){ e.preventDefault(); moveKnob(e.clientX,e.clientY); } });
+    var end = function(e){ if(e.pointerId===activePointer){ activePointer=null; resetKnob(); } };
+    base.addEventListener("pointerup", end);
+    base.addEventListener("pointercancel", end);
+  }
+
+  function buildDpad(){
+    var pad = document.createElement("div"); pad.className="dpad";
+    var defs = [["du","&#9650;","up"],["dl","&#9664;","left"],["dr","&#9654;","right"],["dd","&#9660;","down"]];
+    defs.forEach(function(d){
+      var b = document.createElement("button");
+      b.className = "btn dbtn "+d[0];
+      b.innerHTML = d[1];
+      pad.appendChild(b);
+      holdButton(b, d[2]);
+    });
+    elArea.appendChild(pad);
+  }
+
+  function buildSingle(){
+    var wrap = document.createElement("div"); wrap.className="singleWrap";
+    var a = document.createElement("button"); a.className="btn bigA"; a.textContent="A";
+    wrap.appendChild(a); elArea.appendChild(wrap);
+    holdButton(a,"a");
+  }
+
+  // start
+  show("join");
+  connect();
+})();
+</script>
+</body>
+</html>
