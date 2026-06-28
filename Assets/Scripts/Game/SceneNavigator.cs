@@ -14,6 +14,8 @@ namespace PartyGame
         public const string CoinGameScene = "CoinGame";
         public const string CardGameScene = "CardGame";
         public const string RpsGameScene = "RpsGame";
+        public const string BoardGameScene = "BoardGame";
+        public const string EscapeGameScene = "EscapeGame";
 
         public void LoadScene(string sceneName)
         {
@@ -25,6 +27,8 @@ namespace PartyGame
         public void LoadCoinGame() => LoadScene(CoinGameScene);
         public void LoadCardGame() => LoadScene(CardGameScene);
         public void LoadRpsGame() => LoadScene(RpsGameScene);
+        public void LoadBoardGame() => LoadScene(BoardGameScene);
+        public void LoadEscapeGame() => LoadScene(EscapeGameScene);
         public void LoadMain() => LoadScene(MainScene);
     }
 }

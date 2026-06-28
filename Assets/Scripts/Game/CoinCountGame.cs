@@ -162,7 +162,30 @@ namespace PartyGame
             yield return ShowFinal();
 
             yield return new WaitForSeconds(returnDelay);
-            SceneManager.LoadScene(SceneNavigator.GameSelectScene);
+
+            int winnerId = -1;
+            int maxScore = -1;
+            if (_connections != null)
+            {
+                foreach (var p in _connections.Players)
+                {
+                    if (p.Score > maxScore)
+                    {
+                        maxScore = p.Score;
+                        winnerId = p.ClientId;
+                    }
+                }
+            }
+
+            if (BoardGameManager.Instance != null && BoardGameManager.Instance.IsGameActive)
+            {
+                BoardGameManager.Instance.ReportMinigameWinner(winnerId, "Coin Count");
+                SceneManager.LoadScene("BoardGame");
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneNavigator.GameSelectScene);
+            }
         }
 
         private IEnumerator AnswerPhase(int[] numbers, int answer)

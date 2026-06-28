@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Minigames/RpsGame.unity
     guid: 57d0bbebf277f8c4cbd963820d0f2883
+  - enabled: 1
+    path: Assets/Scenes/BoardGame.unity
+    guid: 8eff94904ef0fb7469729077cf06140a
+  - enabled: 1
+    path: Assets/Scenes/Minigames/EscapeGame.unity
+    guid: 6efa83a20e42b1e45b245f5e7e5b9dfc
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

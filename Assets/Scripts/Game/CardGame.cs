@@ -211,7 +211,17 @@ namespace PartyGame
             _statusText.gameObject.SetActive(true);
 
             yield return new WaitForSeconds(resultShowDuration);
-            SceneManager.LoadScene(SceneNavigator.GameSelectScene);
+
+            int winnerId = (winner != null) ? winner.ClientId : -1;
+            if (BoardGameManager.Instance != null && BoardGameManager.Instance.IsGameActive)
+            {
+                BoardGameManager.Instance.ReportMinigameWinner(winnerId, "Card Match");
+                SceneManager.LoadScene("BoardGame");
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneNavigator.GameSelectScene);
+            }
         }
 
         private IEnumerator EvaluateFlips(PlayerInputData p)
