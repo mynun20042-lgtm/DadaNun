@@ -45,6 +45,7 @@ namespace PartyGame
         // Visual 3D elements
         private GameObject _groundGo;
         private GameObject _turretGo;
+        private GameObject _robotPrototype;
         private readonly List<PlayerReticleInstance> _reticles = new List<PlayerReticleInstance>();
 
         // UI references
@@ -96,6 +97,16 @@ namespace PartyGame
         private void Start()
         {
             InitializePlayersAndReticles();
+
+            // Find and clone the scene's robotSphere as a prototype template
+            GameObject originalRobot = GameObject.Find("robotSphere");
+            if (originalRobot != null)
+            {
+                _robotPrototype = Instantiate(originalRobot);
+                _robotPrototype.name = "RobotPrototype_Template";
+                _robotPrototype.SetActive(false);
+            }
+
             StartCoroutine(GameplayLoop());
         }
 
@@ -116,6 +127,7 @@ namespace PartyGame
         private void OnDestroy()
         {
             // Clean up created runtime visual aids
+            if (_robotPrototype != null) Destroy(_robotPrototype);
             foreach (var r in _reticles)
             {
                 if (r.ReticleGo != null) Destroy(r.ReticleGo);
@@ -513,6 +525,26 @@ namespace PartyGame
             {
                 Destroy(robotGo);
                 SpawnBulletImpactParticles(hitPos, player.Color, charge);
+
+                // Award score to the player who made the shot
+                int pts = charge >= 0.9f ? 5 : 3;
+                if (player.InputSource != null)
+                {
+                    player.InputSource.Score += pts;
+                    if (scoreboard != null) scoreboard.Refresh();
+                }
+
+                // Show satisfying hit status
+                string labelText = charge >= 0.9f ? "MEGA CHARGED BLAST! +5 PTS" : "DIRECT HIT! +3 PTS";
+                if (_statusText != null)
+                {
+                    _statusText.text = player.Nickname.ToUpper() + " " + labelText;
+                    StopCoroutine("ShowHitStatus");
+                    StartCoroutine(ShowHitStatus());
+                }
+
+                // Respawn a new robotSphere after a short delay
+                StartCoroutine(RespawnRobotAfterDelay(1.5f));
             };
 
             var r = bulletGo.GetComponent<Renderer>();
@@ -743,6 +775,32 @@ namespace PartyGame
                 GameManager.Instance.SetMobileTemplate(t);
             else if (_connections != null)
                 _connections.SetTemplateForAll(t);
+        }
+
+        private IEnumerator ShowHitStatus()
+        {
+            if (_statusText != null)
+            {
+                _statusText.gameObject.SetActive(true);
+                yield return new WaitForSeconds(1.5f);
+                _statusText.gameObject.SetActive(false);
+            }
+        }
+
+        private IEnumerator RespawnRobotAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (_robotPrototype != null)
+            {
+                GameObject newRobot = Instantiate(_robotPrototype);
+                newRobot.name = "robotSphere";
+                
+                // Pick a safe random coordinate on the ground
+                float rx = Random.Range(-9f, 9f);
+                float rz = Random.Range(-5f, 7f);
+                newRobot.transform.position = new Vector3(rx, 0f, rz);
+                newRobot.SetActive(true);
+            }
         }
 
         // -------------------------------------------------------------- UI Setup

@@ -678,10 +678,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114253073084258262, guid: 8e0f285c21cdcf14e8d5c06c57ba936b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1528915638184230, guid: 8e0f285c21cdcf14e8d5c06c57ba936b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1037598779}
+    - targetCorrespondingSourceObject: {fileID: 1528915638184230, guid: 8e0f285c21cdcf14e8d5c06c57ba936b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1037598778}
     - targetCorrespondingSourceObject: {fileID: 1688514203954746, guid: 8e0f285c21cdcf14e8d5c06c57ba936b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 872654011}
@@ -888,6 +895,52 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.04601708
   m_Center: {x: 0.00018366985, y: 0.00004537589, z: 0}
+--- !u!1 &1037598777 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1528915638184230, guid: 8e0f285c21cdcf14e8d5c06c57ba936b, type: 3}
+  m_PrefabInstance: {fileID: 872653994}
+  m_PrefabAsset: {fileID: 0}
+--- !u!135 &1037598778
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037598777}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.6
+  m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &1037598779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037598777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84ad628851871fb4dbdb0d101f73bf45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartyGame.RobotPatrol
+  moveSpeed: 1.8
+  rotationSpeed: 6
+  minIdleTime: 1.5
+  maxIdleTime: 4
+  minX: -9
+  maxX: 9
+  minZ: -5
+  maxZ: 7
 --- !u!1 &1162487489
 GameObject:
   m_ObjectHideFlags: 0
