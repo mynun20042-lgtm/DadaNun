@@ -10,14 +10,15 @@ namespace PartyGame.GameViewSettings
     {
         static GameViewScaleKeeper()
         {
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            EditorApplication.update += OnEditorUpdate;
         }
 
-        private static void OnPlayModeStateChanged(PlayModeStateChange change)
+        private static void OnEditorUpdate()
         {
-            if (change == PlayModeStateChange.EnteredPlayMode)
+            // Only force it if we are in Play Mode and the game is running
+            if (EditorApplication.isPlaying)
             {
-                SetGameViewScale(0.72f);
+                SetGameViewScale(0.7f);
             }
         }
 
@@ -28,6 +29,7 @@ namespace PartyGame.GameViewSettings
                 var gameViewType = System.Type.GetType("UnityEditor.GameView,UnityEditor");
                 if (gameViewType == null) return;
 
+                // Find the active GameView window without creating a new window or focusing if it doesn't exist
                 var gameViewWindow = EditorWindow.GetWindow(gameViewType, false, null, false);
                 if (gameViewWindow == null) return;
 
@@ -36,13 +38,21 @@ namespace PartyGame.GameViewSettings
                 {
                     if (scaleField.FieldType == typeof(float))
                     {
-                        scaleField.SetValue(gameViewWindow, scaleValue);
-                        gameViewWindow.Repaint();
+                        float currentScale = (float)scaleField.GetValue(gameViewWindow);
+                        if (!Mathf.Approximately(currentScale, scaleValue))
+                        {
+                            scaleField.SetValue(gameViewWindow, scaleValue);
+                            gameViewWindow.Repaint();
+                        }
                     }
                     else if (scaleField.FieldType == typeof(Vector2))
                     {
-                        scaleField.SetValue(gameViewWindow, new Vector2(scaleValue, scaleValue));
-                        gameViewWindow.Repaint();
+                        Vector2 currentScale = (Vector2)scaleField.GetValue(gameViewWindow);
+                        if (!Mathf.Approximately(currentScale.x, scaleValue))
+                        {
+                            scaleField.SetValue(gameViewWindow, new Vector2(scaleValue, scaleValue));
+                            gameViewWindow.Repaint();
+                        }
                     }
                 }
                 else
@@ -50,8 +60,12 @@ namespace PartyGame.GameViewSettings
                     var scaleProperty = gameViewType.GetProperty("scale", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                     if (scaleProperty != null)
                     {
-                        scaleProperty.SetValue(gameViewWindow, scaleValue, null);
-                        gameViewWindow.Repaint();
+                        float currentScale = (float)scaleProperty.GetValue(gameViewWindow, null);
+                        if (!Mathf.Approximately(currentScale, scaleValue))
+                        {
+                            scaleProperty.SetValue(gameViewWindow, scaleValue, null);
+                            gameViewWindow.Repaint();
+                        }
                     }
                 }
             }

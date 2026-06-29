@@ -521,31 +521,9 @@ namespace PartyGame
 
             // Add trigger handler
             var handler = bulletGo.AddComponent<BulletTriggerHandler>();
-            handler.onRobotHit = (hitPos, robotGo) =>
-            {
-                Destroy(robotGo);
-                SpawnBulletImpactParticles(hitPos, player.Color, charge);
-
-                // Award score to the player who made the shot
-                int pts = charge >= 0.9f ? 5 : 3;
-                if (player.InputSource != null)
-                {
-                    player.InputSource.Score += pts;
-                    if (scoreboard != null) scoreboard.Refresh();
-                }
-
-                // Show satisfying hit status
-                string labelText = charge >= 0.9f ? "MEGA CHARGED BLAST! +5 PTS" : "DIRECT HIT! +3 PTS";
-                if (_statusText != null)
-                {
-                    _statusText.text = player.Nickname.ToUpper() + " " + labelText;
-                    StopCoroutine("ShowHitStatus");
-                    StartCoroutine(ShowHitStatus());
-                }
-
-                // Respawn a new robotSphere after a short delay
-                StartCoroutine(RespawnRobotAfterDelay(1.5f));
-            };
+            handler.shooter = player.InputSource;
+            handler.playerColor = player.Color;
+            handler.damage = (charge >= 0.9f) ? 50f : 20f; // 50 damage if fully charged (charge >= 0.9s), otherwise 20 damage!
 
             var r = bulletGo.GetComponent<Renderer>();
             if (r != null)
@@ -787,19 +765,29 @@ namespace PartyGame
             }
         }
 
-        private IEnumerator RespawnRobotAfterDelay(float delay)
+        /// <summary>
+        /// Award score (same 3 points for normal and full-charge) and play grand death explosion!
+        /// </summary>
+        public void OnRobotKilled(Vector3 hitPos, PlayerInputData shooter, Color playerColor)
         {
-            yield return new WaitForSeconds(delay);
-            if (_robotPrototype != null)
+            // Play a highly spectacular impact/death explosion!
+            SpawnBulletImpactParticles(hitPos, playerColor, 1.0f);
+
+            // Award points (both normal/full-charge give the SAME points, let's say +3 pts)
+            int pts = 3;
+            if (shooter != null)
             {
-                GameObject newRobot = Instantiate(_robotPrototype);
-                newRobot.name = "robotSphere";
-                
-                // Pick a safe random coordinate on the ground
-                float rx = Random.Range(-9f, 9f);
-                float rz = Random.Range(-5f, 7f);
-                newRobot.transform.position = new Vector3(rx, 0f, rz);
-                newRobot.SetActive(true);
+                shooter.Score += pts;
+                if (scoreboard != null) scoreboard.Refresh();
+            }
+
+            // Display UI status notification
+            if (_statusText != null)
+            {
+                string nickname = shooter != null ? shooter.Nickname.ToUpper() : "A PLAYER";
+                _statusText.text = nickname + " ELIMINATED THE ROBOT! +3 PTS";
+                StopCoroutine("ShowHitStatus");
+                StartCoroutine(ShowHitStatus());
             }
         }
 
@@ -843,20 +831,32 @@ namespace PartyGame
     }
 
     /// <summary>
-    /// Handles trigger-based impact detection with 'robot' tagged colliders.
+    /// Handles trigger-based impact detection with 'robot' tagged colliders, routing to RobotHealth.
     /// </summary>
     public class BulletTriggerHandler : MonoBehaviour
     {
-        public System.Action<Vector3, GameObject> onRobotHit;
+        public PlayerInputData shooter;
+        public Color playerColor;
+        public float damage = 20f;
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("robot"))
+            // First check if the other object has a RobotHealth component
+            var health = other.GetComponent<RobotHealth>();
+            if (health != null)
             {
-                if (onRobotHit != null)
+                health.TakeDamage(damage, shooter, playerColor);
+                Destroy(gameObject); // Consume bullet
+            }
+            else if (other.CompareTag("robot"))
+            {
+                // Fallback direct kill if health component is somehow missing but tagged 'robot'
+                var game = Object.FindFirstObjectByType<EscapeGame>();
+                if (game != null)
                 {
-                    onRobotHit(transform.position, other.gameObject);
+                    game.OnRobotKilled(transform.position, shooter, playerColor);
                 }
+                Destroy(other.gameObject);
                 Destroy(gameObject);
             }
         }
