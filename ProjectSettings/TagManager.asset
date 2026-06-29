@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - playerpointer
+  - robot
   layers:
   - Default
   - TransparentFX
