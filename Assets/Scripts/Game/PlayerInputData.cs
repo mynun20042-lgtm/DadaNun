@@ -41,6 +41,14 @@ namespace PartyGame
         public bool Choice3;
         public bool Choice4;
 
+        [Header("NumberPad template (consumable events)")]
+        [Tooltip("The most recently submitted number, valid only while HasSubmittedNumber is true.")]
+        public int SubmittedNumber;
+        [Tooltip("True when a number submission is pending consumption by the game logic.")]
+        public bool HasSubmittedNumber;
+        [Tooltip("Item slot (1-4) the player tapped to use, or 0 if none pending.")]
+        public int PendingItemSlot;
+
         /// <summary>
         /// Returns which of the four choice buttons is currently held (1-4),
         /// or 0 if none. If multiple are held, the lowest index wins.
@@ -88,6 +96,17 @@ namespace PartyGame
                     Choice3 = m.c3;
                     Choice4 = false;
                     break;
+                case MobileTemplate.NumberPad:
+                    if (m.submit)
+                    {
+                        SubmittedNumber = m.num;
+                        HasSubmittedNumber = true;
+                    }
+                    if (m.item >= 1 && m.item <= 4)
+                    {
+                        PendingItemSlot = m.item;
+                    }
+                    break;
             }
         }
 
@@ -99,6 +118,9 @@ namespace PartyGame
             DpadUp = DpadDown = DpadLeft = DpadRight = false;
             SingleA = false;
             Choice1 = Choice2 = Choice3 = Choice4 = false;
+            SubmittedNumber = 0;
+            HasSubmittedNumber = false;
+            PendingItemSlot = 0;
         }
     }
 }

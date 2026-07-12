@@ -65,6 +65,19 @@
   .qbtn.active { filter:brightness(1.25); transform:scale(0.96); }
   .qbtn.unselected { opacity: 0.2; filter: scale(0.95); }
   .qbtn.selected { transform: scale(1.05) !important; background: var(--accent) !important; color: #ffffff !important; border: 4px solid #ffffff !important; box-shadow: 0 0 25px rgba(79, 124, 255, 0.8); z-index: 10; }
+
+  /* number pad & items row */
+  .numpadWrap { position:absolute; inset:0; display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .numDisplay { height:50px; background:var(--panel); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:bold; color:var(--accent); border:1px solid rgba(255,255,255,0.05); }
+  .numGrid { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .numBtn { background:var(--panel); border:1px solid rgba(255,255,255,0.05); border-radius:12px; font-size:24px; font-weight:bold; color:var(--txt); display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; }
+  .numBtn:active { background:var(--accent); }
+  .submitBtn { background:var(--accent); border-radius:12px; font-size:20px; font-weight:bold; color:#fff; display:flex; align-items:center; justify-content:center; grid-column:span 3; height:50px; border:none; cursor:pointer; }
+  .submitBtn:active { filter:brightness(1.2); }
+  .itemsRow { height:75px; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:4px; }
+  .itemSlot { background:var(--panel); border:2px dashed rgba(255,255,255,0.1); border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; text-align:center; padding:4px; color:#9aa3bd; overflow:hidden; }
+  .itemSlot.active { border:2px solid var(--b); background:rgba(255,182,72,0.05); color:#fff; font-weight:bold; cursor:pointer; }
+  .itemSlot.active:active { filter:brightness(1.25); transform:scale(0.95); }
 </style>
 </head>
 <body>
@@ -94,15 +107,16 @@
 (function(){
   "use strict";
 
-  var TEMPLATE = { NONE:0, JOYSTICK_AB:1, DPAD:2, SINGLE:3, FOUR_CHOICE:4, THREE_CHOICE:5 };
+  var TEMPLATE = { NONE:0, JOYSTICK_AB:1, DPAD:2, SINGLE:3, FOUR_CHOICE:4, THREE_CHOICE:5, NUMBER_PAD:6 };
 
   var ws = null;
   var myId = 0;
   var myNick = "";
   var template = TEMPLATE.NONE;
   var joined = false;
+  var myItems = ["", "", "", ""]; // stores current private item slot names
 
-  var state = { jx:0, jy:0, a:false, b:false, up:false, down:false, left:false, right:false, c1:false, c2:false, c3:false, c4:false };
+  var state = { jx:0, jy:0, a:false, b:false, up:false, down:false, left:false, right:false, c1:false, c2:false, c3:false, c4:false, num:0, submit:false, item:0 };
 
   var elJoin   = document.getElementById("join");
   var elPlay   = document.getElementById("play");
@@ -174,6 +188,14 @@
           template = newTemplate;
         }
         break;
+      case "items":
+        if (msg.items !== undefined) {
+          myItems = msg.items.split("|");
+          if (template === TEMPLATE.NUMBER_PAD) {
+            updateItemSlotsUI();
+          }
+        }
+        break;
     }
   }
 
@@ -192,6 +214,14 @@
     else if (template === TEMPLATE.DPAD){ m.up=state.up; m.down=state.down; m.left=state.left; m.right=state.right; }
     else if (template === TEMPLATE.SINGLE){ m.a=state.a; }
     else if (template === TEMPLATE.FOUR_CHOICE || template === TEMPLATE.THREE_CHOICE){ m.c1=state.c1; m.c2=state.c2; m.c3=state.c3; m.c4=state.c4; }
+    else if (template === TEMPLATE.NUMBER_PAD){
+      m.num = state.num;
+      m.submit = state.submit;
+      m.item = state.item;
+      // Reset the transient action fields so they only trigger once per tap
+      state.submit = false;
+      state.item = 0;
+    }
     else return;
     send(m);
   }
@@ -230,13 +260,131 @@
    state.jx=0; state.jy=0; state.a=false; state.b=false;
    state.up=false; state.down=false; state.left=false; state.right=false;
    state.c1=false; state.c2=false; state.c3=false; state.c4=false;
+   state.num=0; state.submit=false; state.item=0;
 
    if (t === TEMPLATE.JOYSTICK_AB) buildJoystickAB();
    else if (t === TEMPLATE.DPAD) buildDpad();
    else if (t === TEMPLATE.SINGLE) buildSingle();
    else if (t === TEMPLATE.FOUR_CHOICE) buildFourChoice(act);
    else if (t === TEMPLATE.THREE_CHOICE) buildThreeChoice(act);
+   else if (t === TEMPLATE.NUMBER_PAD) buildNumberPad(act);
    else buildWaiting();
+ }
+
+ function buildNumberPad(act){
+   var wrap = document.createElement("div"); wrap.className = "numpadWrap";
+   if (!act) wrap.style.opacity = "0.5";
+
+   // Display
+   var display = document.createElement("div"); display.className = "numDisplay";
+   display.textContent = "0";
+   wrap.appendChild(display);
+
+   // Number Grid
+   var grid = document.createElement("div"); grid.className = "numGrid";
+   if (!act) grid.style.pointerEvents = "none";
+
+   // 1-9 Buttons
+   for (var i = 1; i <= 9; i++) {
+     (function(n) {
+       var btn = document.createElement("button"); btn.className = "btn numBtn";
+       btn.textContent = n;
+       btn.addEventListener("pointerdown", function(e) {
+         e.preventDefault();
+         state.num = state.num * 10 + n;
+         if (state.num > 99) state.num = 99; // Cap display at 99 for clean layout
+         display.textContent = state.num;
+       });
+       grid.appendChild(btn);
+     })(i);
+   }
+
+   // Backspace (C) Button
+   var cBtn = document.createElement("button"); cBtn.className = "btn numBtn";
+   cBtn.style.color = "var(--a)";
+   cBtn.textContent = "C";
+   cBtn.addEventListener("pointerdown", function(e) {
+     e.preventDefault();
+     state.num = 0;
+     display.textContent = "0";
+   });
+   grid.appendChild(cBtn);
+
+   // 0 Button
+   (function(n) {
+     var btn = document.createElement("button"); btn.className = "btn numBtn";
+     btn.textContent = n;
+     btn.addEventListener("pointerdown", function(e) {
+       e.preventDefault();
+       state.num = state.num * 10 + n;
+       if (state.num > 99) state.num = 99;
+       display.textContent = state.num;
+     });
+     grid.appendChild(btn);
+   })(0);
+
+   // Backspace single digit button (<-)
+   var bBtn = document.createElement("button"); bBtn.className = "btn numBtn";
+   bBtn.textContent = "⌫";
+   bBtn.addEventListener("pointerdown", function(e) {
+     e.preventDefault();
+     state.num = Math.floor(state.num / 10);
+     display.textContent = state.num;
+   });
+   grid.appendChild(bBtn);
+
+   // Submit Button
+   var submit = document.createElement("button"); submit.className = "btn submitBtn";
+   submit.textContent = "Submit (보내기)";
+   submit.addEventListener("pointerdown", function(e) {
+     e.preventDefault();
+     state.submit = true;
+     sendInput();
+     // Reset input display
+     state.num = 0;
+     display.textContent = "0";
+   });
+   grid.appendChild(submit);
+   wrap.appendChild(grid);
+
+   // Items Row
+   var itemsRow = document.createElement("div"); itemsRow.className = "itemsRow";
+   itemsRow.id = "itemsRow";
+   wrap.appendChild(itemsRow);
+   elArea.appendChild(wrap);
+
+   updateItemSlotsUI();
+ }
+
+ function updateItemSlotsUI() {
+   var itemsRow = document.getElementById("itemsRow");
+   if (!itemsRow) return;
+   itemsRow.innerHTML = "";
+
+   for (var i = 0; i < 4; i++) {
+     (function(idx) {
+       var slot = document.createElement("div"); slot.className = "itemSlot";
+       var itemName = myItems[idx] || "";
+       
+       if (itemName) {
+         slot.classList.add("active");
+         slot.innerHTML = "<div style='font-size:18px; margin-bottom:2px;'>🎁</div><div style='font-size:10px; line-height:11px;'>" + itemName + "</div>";
+         slot.addEventListener("pointerdown", function(e) {
+           e.preventDefault();
+           // Send slot tap (1-based index)
+           state.item = idx + 1;
+           sendInput();
+           // Local lock immediately to prevent double click
+           slot.classList.remove("active");
+           slot.innerHTML = "Empty";
+           myItems[idx] = "";
+         });
+       } else {
+         slot.innerHTML = "<div style='opacity:0.3'>Empty</div>";
+       }
+       itemsRow.appendChild(slot);
+     })(i);
+   }
  }
 
   function buildWaiting(){

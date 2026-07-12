@@ -52,6 +52,15 @@ namespace PartyGame
         public bool c3;
         public bool c4;
 
+        // --- input: number pad (NumberPad) ---
+        public int num;      // the number the player is submitting (their spoken number)
+        public bool submit;  // true when the player confirms/sends their number
+        public int item;     // 1-4: item slot the player tapped to use (0 = none)
+
+        // --- items push (PC -> Mobile), NumberPad only ---
+        // "|"-separated labels for the player's four item slots ("" = empty slot).
+        public string items;
+
         // --- joinResult ---
         public bool ok;
 
@@ -69,5 +78,9 @@ namespace PartyGame
 
         public static NetMessage Template(MobileTemplate t, bool active = true) =>
             new NetMessage { type = "template", template = (int)t, active = active };
+
+        /// <summary>PC -> Mobile: push the player's private item slot labels for the NumberPad template.</summary>
+        public static NetMessage Items(string items) =>
+            new NetMessage { type = "items", items = items };
     }
 }

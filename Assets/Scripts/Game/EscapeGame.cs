@@ -165,9 +165,6 @@ namespace PartyGame
             {
                 _mainCam.orthographic = false; // Perspective
                 _mainCam.fieldOfView = 60f;
-                // Position looking straight forward as requested!
-                _mainCam.transform.position = new Vector3(0f, 2.5f, -12.5f);
-                _mainCam.transform.rotation = Quaternion.Euler(0f, 0f, 0f); // 0 0 0 as requested!
                 _mainCam.clearFlags = CameraClearFlags.SolidColor;
                 _mainCam.backgroundColor = skyColor;
             }

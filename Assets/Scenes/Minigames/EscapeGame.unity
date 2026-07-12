@@ -1555,6 +1555,175 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 100
   invincibilityDuration: 0.5
+--- !u!1001 &1754108075
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1533089737395678950, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_Name
+      value: 2nd Floor
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6122925505458219776, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6653341826249592513, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 8535242354699080143, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.47
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8004880326023156453, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1754108083}
+    - targetCorrespondingSourceObject: {fileID: 2839400555135122397, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1754108082}
+    - targetCorrespondingSourceObject: {fileID: 1008330372520523756, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1754108081}
+    - targetCorrespondingSourceObject: {fileID: 947802315252084379, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1754108080}
+  m_SourcePrefab: {fileID: 100100000, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+--- !u!1 &1754108076 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 947802315252084379, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+  m_PrefabInstance: {fileID: 1754108075}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1754108077 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1008330372520523756, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+  m_PrefabInstance: {fileID: 1754108075}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1754108078 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2839400555135122397, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+  m_PrefabInstance: {fileID: 1754108075}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1754108079 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8004880326023156453, guid: a28588b34d44a8e4ab38de9dde95c9c5, type: 3}
+  m_PrefabInstance: {fileID: 1754108075}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1754108080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754108076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5a19dcc22211c40ba6f4ef2650cffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartyGame.RobotHealth
+  maxHealth: 100
+  currentHealth: 100
+  invincibilityDuration: 0.5
+--- !u!114 &1754108081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754108077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5a19dcc22211c40ba6f4ef2650cffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartyGame.RobotHealth
+  maxHealth: 100
+  currentHealth: 100
+  invincibilityDuration: 0.5
+--- !u!114 &1754108082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754108078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5a19dcc22211c40ba6f4ef2650cffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartyGame.RobotHealth
+  maxHealth: 100
+  currentHealth: 100
+  invincibilityDuration: 0.5
+--- !u!114 &1754108083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754108079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5a19dcc22211c40ba6f4ef2650cffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartyGame.RobotHealth
+  maxHealth: 100
+  currentHealth: 100
+  invincibilityDuration: 0.5
 --- !u!21 &1768879627
 Material:
   serializedVersion: 8
@@ -1932,3 +2101,4 @@ SceneRoots:
   - {fileID: 2093404624}
   - {fileID: 1333174490}
   - {fileID: 1162487490}
+  - {fileID: 1754108075}

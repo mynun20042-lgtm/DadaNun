@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ce565d20f04c02040b4fd25793bd967c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264684
+  packageName: 'RTS: Helicopter Low Poly'
+  packageVersion: 1.0
+  assetPath: Assets/Raptor3D/MSH_N2/Scenes/Material/Terrain.mat
+  uploadId: 658915

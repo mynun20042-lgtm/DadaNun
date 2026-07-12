@@ -24,5 +24,8 @@ namespace PartyGame
 
         /// <summary>Three choice buttons (Scissors / Rock / Paper), used for Rock-Paper-Scissors.</summary>
         ThreeChoice = 5,
+
+        /// <summary>Numeric keypad (0-9) plus four item slots, used for Baskin Robbins 31.</summary>
+        NumberPad = 6,
     }
 }

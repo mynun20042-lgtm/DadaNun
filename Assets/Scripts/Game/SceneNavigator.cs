@@ -16,6 +16,8 @@ namespace PartyGame
         public const string RpsGameScene = "RpsGame";
         public const string BoardGameScene = "BoardGame";
         public const string EscapeGameScene = "EscapeGame";
+        public const string Escape2Scene = "Escape2";
+        public const string BaskinRobbins31Scene = "BaskinRobbins31";
 
         public void LoadScene(string sceneName)
         {
@@ -29,6 +31,8 @@ namespace PartyGame
         public void LoadRpsGame() => LoadScene(RpsGameScene);
         public void LoadBoardGame() => LoadScene(BoardGameScene);
         public void LoadEscapeGame() => LoadScene(EscapeGameScene);
+        public void LoadEscape2() => LoadScene(Escape2Scene);
+        public void LoadBaskinRobbins31() => LoadScene(BaskinRobbins31Scene);
         public void LoadMain() => LoadScene(MainScene);
     }
 }

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fe7fb66c695366c44a132b47f86782fb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264684
+  packageName: 'RTS: Helicopter Low Poly'
+  packageVersion: 1.0
+  assetPath: Assets/Raptor3D/MSH_N2/Materials/LOD0/1_Weapon/Main_V1_Mat.mat
+  uploadId: 658915
