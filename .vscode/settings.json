@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "My project (2).slnx"
+    "dotnet.defaultSolution": "DadaNun.slnx"
 }
