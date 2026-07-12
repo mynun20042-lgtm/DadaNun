@@ -5,6 +5,7 @@ public class exercise : MonoBehaviour
 {
     public int a;
     public BoxCollider boxcollider;
+    public CircleCollider2D circleCollider2D;
     IEnumerator asdf()
     {
         yield return new WaitForSeconds(1f);
